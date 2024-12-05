@@ -53,14 +53,9 @@ public class PolicyProcessor {
 
             for (Map<String, Object> policyData : policies) {
                 String policyType = isComplexPolicy(policyData) ? "complex" : "simple";
-
                 Policy policy = PolicyFactory.createPolicy(policyType);
 
-                List<String> applicableEvents = policy.apply(Collections.singletonList(movement), policyData);
-
-                for (String event : applicableEvents) {
-                    allEvents.removeIf(e -> e.name().equals(event));
-                }
+                policy.apply(Collections.singletonList(movement), policyData, allEvents);
             }
 
             if (!allEvents.isEmpty()) {
