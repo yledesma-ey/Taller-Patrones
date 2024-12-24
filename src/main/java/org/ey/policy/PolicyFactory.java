@@ -1,11 +1,10 @@
 package org.ey.policy;
 
+import java.util.Map;
+
 public class PolicyFactory {
-    public static Policy createPolicy(String type) {
-        return switch (type.toLowerCase()) {
-            case "simple" -> new SimplePolicy();
-            case "complex" -> new CompletePolicy();
-            default -> throw new IllegalArgumentException("Unknown policy type: " + type);
-        };
+    public static Policy createPolicy(Map<String, Object> policyData) {
+        boolean isComplex = policyData.containsKey("field") && policyData.containsKey("operator");
+        return isComplex ? new CompletePolicy() : new SimplePolicy();
     }
 }

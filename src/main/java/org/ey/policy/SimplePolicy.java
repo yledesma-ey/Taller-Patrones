@@ -9,7 +9,6 @@ import java.util.Map;
 public class SimplePolicy implements Policy {
     @Override
     public void apply(List<Map<String, String>> movements, Map<String, Object> policyData, List<ResolutionEvent> allEvents) {
-        List<String> applicableEvents = new ArrayList<>();
         String comparator = ((String) policyData.get("comparator")).trim();
         String compareToValue = (String) policyData.get("compareToValue");
         List<String> events = (List<String>) policyData.get("events");
@@ -29,10 +28,7 @@ public class SimplePolicy implements Policy {
                 for (String event : events) {
                     allEvents.removeIf(e -> e.name().equals(event));
                 }
-               // applicableEvents.addAll(events);
             }
         }
-
-       // return applicableEvents;
     }
 }

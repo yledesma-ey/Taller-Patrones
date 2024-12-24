@@ -5,6 +5,7 @@ import org.ey.enums.PortfolioStatus;
 import org.ey.enums.ResolutionEvent;
 import org.ey.policy.PolicyFactory;
 import org.ey.policy.Policy;
+import org.ey.portfolio.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,9 +53,7 @@ public class PolicyProcessor {
             String carteraId = movement.get("carteraId");
 
             for (Map<String, Object> policyData : policies) {
-                String policyType = isComplexPolicy(policyData) ? "complex" : "simple";
-                Policy policy = PolicyFactory.createPolicy(policyType);
-
+                Policy policy = PolicyFactory.createPolicy(policyData);
                 policy.apply(Collections.singletonList(movement), policyData, allEvents);
             }
 
@@ -63,16 +62,19 @@ public class PolicyProcessor {
                 System.out.println("Evento a aplicar: " + eventToApply);
                 ResolutionEvent resultEvent = ResolutionEvent.valueOf(eventToApply);
 
+                // Obtiene el estado actual del portafolio desde el DAO
                 PortfolioStatus currentStatus = dao.getPortfolioStatus(Long.parseLong(carteraId));
 
-                PortfolioStatus nextStatus = currentStatus.nextState(resultEvent);
+                // Obtiene la instancia de PortfolioState correspondiente
+                PortfolioState currentState = PortfolioStateFactory.getState(currentStatus);
 
+                // Calcula el siguiente estado
+                PortfolioStatus nextStatus = currentState.nextState(resultEvent);
+
+                // Guarda el nuevo estado en la base de datos
                 dao.savePortfolioStatus(Long.valueOf(carteraId), nextStatus);
             }
-        }
-    }
 
-    private boolean isComplexPolicy(Map<String, Object> policyData) {
-        return policyData.containsKey("field") && policyData.containsKey("operator");
+        }
     }
 }
