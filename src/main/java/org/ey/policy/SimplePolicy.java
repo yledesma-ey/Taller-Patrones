@@ -1,5 +1,6 @@
 package org.ey.policy;
 
+import org.ey.comparator.ComparatorCommandRegistry;
 import org.ey.enums.ResolutionEvent;
 
 import java.util.ArrayList;
@@ -17,12 +18,10 @@ public class SimplePolicy implements Policy {
             double policyValue = Double.parseDouble(compareToValue);
             double amount = Double.parseDouble(movement.get("amount"));
 
-            boolean isConditionMet = switch (comparator) {
-                case "greater_than" -> amount > policyValue;
-                case "greater_or_equal" -> amount >= policyValue;
-                case "less_or_equal" -> amount <= policyValue;
-                default -> false;
-            };
+            boolean isConditionMet = ComparatorCommandRegistry
+                    .getCommand(comparator)
+                    .execute(String.valueOf(amount), String.valueOf(policyValue));
+
 
             if (isConditionMet) {
                 for (String event : events) {

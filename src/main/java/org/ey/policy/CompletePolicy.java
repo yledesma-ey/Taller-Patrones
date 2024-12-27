@@ -1,5 +1,7 @@
 package org.ey.policy;
 
+import org.ey.comparator.ComparatorCommand;
+import org.ey.comparator.ComparatorCommandRegistry;
 import org.ey.enums.ResolutionEvent;
 
 import java.util.List;
@@ -64,16 +66,7 @@ public class CompletePolicy implements Policy {
     }
 
     private boolean evaluateCondition(String value, String comparator, String compareToValue) {
-        switch (comparator) {
-            case "equals":
-            case "equal":  // Aquí agregamos "equal"
-                return value.equals(compareToValue);
-            case "greater_than":
-                return Double.parseDouble(value) > Double.parseDouble(compareToValue);
-            case "greater_equal":
-                return Double.parseDouble(value) >= Double.parseDouble(compareToValue);
-            default:
-                return false;
-        }
+        ComparatorCommand command = ComparatorCommandRegistry.getCommand(comparator);
+        return command.execute(value, compareToValue);
     }
 }
